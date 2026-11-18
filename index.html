@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jonli efir</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#0b0f17; --card:#131a26; --card2:#18212f; --line:#243044;
+    --text:#eef2f8; --muted:#8a97ab; --accent:#2ea6ff; --live:#ff3b4e;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  body{min-height:100vh;padding:max(16px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom));
+    background:radial-gradient(900px 400px at 50% -120px,#16304f 0%,transparent 70%),var(--bg)}
+  .wrap{max-width:560px;margin:0 auto}
+  header{display:flex;align-items:center;gap:12px;margin:4px 0 18px}
+  .logo{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:22px;
+    background:linear-gradient(135deg,#2ea6ff,#1366d6);box-shadow:0 6px 18px rgba(46,166,255,.35)}
+  h1{font-size:19px;line-height:1.2;margin:0;font-weight:700}
+  .sub{font-size:13px;color:var(--muted);margin-top:2px}
+  .seg{display:flex;gap:6px;padding:5px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:14px}
+  .seg button{flex:1;border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;line-height:1;font-family:inherit;
+    padding:11px 6px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.15s}
+  .seg button .ic{font-size:18px}
+  .seg button.on{background:var(--card2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
+  .stage{position:relative;aspect-ratio:16/9;width:100%;border-radius:18px;overflow:hidden;background:#05080d;
+    border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,.45)}
+  .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .poster{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    text-align:center;padding:18px;background:linear-gradient(160deg,#122238,#0a1019)}
+  .poster .big{font-size:40px}
+  .poster p{margin:0;color:var(--muted);font-size:13px;max-width:30ch;line-height:1.4}
+  .badge{position:absolute;top:10px;left:10px;z-index:2;display:flex;align-items:center;gap:6px;
+    font-weight:700;font-size:11px;line-height:1;letter-spacing:.06em;padding:6px 9px;border-radius:999px;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(6px);color:#fff}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:p 1.4s infinite}
+  @keyframes p{0%{box-shadow:0 0 0 0 rgba(255,59,78,.7)}100%{box-shadow:0 0 0 9px rgba(255,59,78,0)}}
+  .btn{appearance:none;border:0;cursor:pointer;font-weight:700;font-size:14px;line-height:1;font-family:inherit;color:#fff;
+    background:linear-gradient(135deg,#2ea6ff,#1366d6);padding:13px 20px;border-radius:12px;
+    box-shadow:0 6px 16px rgba(46,166,255,.3)}
+  .btn:active{transform:scale(.97)}
+  .info{margin-top:14px;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .info h2{margin:0 0 4px;font-size:15px}
+  .info p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+  .row{display:flex;gap:10px;margin-top:12px}
+  .row .btn{flex:1;text-align:center}
+  .btn.ghost{background:var(--card2);box-shadow:inset 0 0 0 1px var(--line);color:var(--text)}
+  footer{text-align:center;color:var(--muted);font-size:11px;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">📺</div>
+    <div>
+      <h1>Jonli efir</h1>
+      <div class="sub">GTA Avtomoyka · Namangan</div>
+    </div>
+  </header>
+
+  <div class="seg" id="tabs"></div>
+  <div class="stage" id="stage"></div>
+  <div class="info" id="info"></div>
+  <footer>Efir kechikishi bir necha soniya bo'lishi mumkin</footer>
+</div>
+
+<script>
+/* ====== SOZLAMA ======
+   YOUTUBE_CHANNEL_ID: kanal ID si ("UC..." bilan boshlanadi). YouTube Studio →
+   Sozlamalar → Kanal → Kengaytirilgan sozlamalar da ko'rinadi.
+   Bo'sh qoldirilsa, YouTube tugma orqali ochiladi. */
+const YOUTUBE_CHANNEL_ID = "";
+const SOURCES = [
+  { id:"yt", icon:"▶️", name:"YouTube", title:"Real Travel Life 4K",
+    desc:"Namangan ko'chalaridan 24/7 jonli efir.",
+    url:"https://www.youtube.com/@Real_traveluz/live", live:true },
+  { id:"sky", icon:"🌤️", name:"Skyline", title:"Skyline Webcams — Namangan",
+    desc:"Namangan shahridan veb-kamera.",
+    url:"https://www.skylinewebcams.com/webcam/uzbekistan/namangan-region/namangan/namangan.html" },
+  { id:"fame", icon:"🎥", name:"Famelack", title:"Famelack — Namangan veb-kamera",
+    desc:"Namangan veb-kamerasi (Famelack).",
+    url:"https://famelack.com/webcams/uz/001SRs3qtTEwFK" }
+];
+
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor("#0b0f17"); tg.setBackgroundColor("#0b0f17"); }catch(e){} }
+
+function openExternal(url){
+  if (tg && tg.openLink) tg.openLink(url); else window.open(url, "_blank");
+}
+let current = "yt";
+try { const s = sessionStorage.getItem("src"); if (s) current = s; } catch(e){}
+
+function render(){
+  const src = SOURCES.find(s => s.id === current) || SOURCES[0];
+  document.getElementById("tabs").innerHTML = SOURCES.map(s =>
+    `<button class="${s.id===src.id?'on':''}" data-id="${s.id}"><span class="ic">${s.icon}</span>${s.name}</button>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+    current = b.dataset.id; try{ sessionStorage.setItem("src", current); }catch(e){} render();
+  });
+
+  const stage = document.getElementById("stage");
+  const badge = src.live ? `<div class="badge"><span class="dot"></span>JONLI</div>` : "";
+  if (src.id === "yt" && YOUTUBE_CHANNEL_ID) {
+    stage.innerHTML = badge + `<iframe allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+      src="https://www.youtube.com/embed/live_stream?channel=${YOUTUBE_CHANNEL_ID}&autoplay=1&playsinline=1&rel=0"></iframe>`;
+  } else {
+    stage.innerHTML = badge + `<div class="poster"><div class="big">${src.icon}</div>
+      <button class="btn" id="go">Efirni ochish</button></div>`;
+    document.getElementById("go").onclick = () => openExternal(src.url);
+  }
+
+  document.getElementById("info").innerHTML =
+    `<h2>${src.title}</h2><p>${src.desc}</p>
+     <div class="row"><button class="btn ghost" id="ext">Brauzerda ochish ↗</button></div>`;
+  document.getElementById("ext").onclick = () => openExternal(src.url);
+}
+render();
+</script>
+</body>
+</html>
